@@ -1,0 +1,3300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CAAC无人机执照</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #007AFF;
+            --bg-gradient-start: #E8F4FF;
+            --bg-gradient-end: #F0F7FF;
+            --card-bg: white;
+            --text-primary: #2C3E50;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --shadow-color: rgba(0,0,0,0.06);
+            --shadow-hover: rgba(0,0,0,0.08);
+            --border-color: #E0E8F5;
+            --nav-bg: white;
+            --nav-shadow: rgba(0,0,0,0.05);
+            --status-bar-text: #333;
+            --mode-card-gradient-start: #E8F2FF;
+            --mode-card-gradient-end: #D4E5FF;
+            --modal-bg: rgba(0,0,0,0.5);
+            --success-color: #52c41a;
+            --error-color: #ff4d4f;
+            --warning-color: #faad14;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1f2e;
+            --bg-gradient-end: #242938;
+            --card-bg: #2d3142;
+            --text-primary: #E8E8E8;
+            --text-secondary: #B8B8B8;
+            --text-tertiary: #808080;
+            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-hover: rgba(0,0,0,0.4);
+            --border-color: #3a3f52;
+            --nav-bg: #2d3142;
+            --nav-shadow: rgba(0,0,0,0.3);
+            --status-bar-text: #E8E8E8;
+            --mode-card-gradient-start: #2a3f5f;
+            --mode-card-gradient-end: #1e2f47;
+            --modal-bg: rgba(0,0,0,0.7);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* 头部导航 */
+        .top-header {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-bottom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .license-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .app-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* 执照类型选择器 */
+        .license-selector {
+            padding: 8px 12px;
+            background: var(--bg-gradient-start);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .license-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-hover);
+            display: none;
+            z-index: 100;
+            min-width: 180px;
+        }
+
+        .license-dropdown.active {
+            display: block;
+        }
+
+        .license-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .license-option:hover {
+            background: var(--bg-gradient-start);
+        }
+
+        .license-option.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .license-option:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .license-option:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 颜色选择器 */
+        .color-picker-wrapper {
+            position: relative;
+        }
+
+        .color-picker-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            border: 2px solid var(--card-bg);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow-hover);
+        }
+
+        .color-picker-panel {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 20px var(--shadow-hover);
+            display: none;
+            z-index: 100;
+        }
+
+        .color-picker-panel.active {
+            display: block;
+        }
+
+        .color-presets {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-preset {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-preset:hover {
+            transform: scale(1.2);
+            border-color: var(--primary-color);
+        }
+
+        .theme-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .toggle-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 主题切换按钮优化 */
+        .theme-switch {
+            width: 48px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .theme-switch.active {
+            background: var(--primary-color);
+        }
+
+        .theme-switch-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .theme-switch.active .theme-switch-slider {
+            transform: translateX(24px);
+        }
+
+        /* 练习进度卡片 */
+        .practice-card {
+            margin: 20px;
+            background: linear-gradient(135deg, var(--mode-card-gradient-start) 0%, var(--mode-card-gradient-end) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .practice-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .practice-count {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .practice-subtitle {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .progress-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* 题库卡片 */
+        .topic-cards {
+            display: flex;
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .topic-card {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        .topic-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .topic-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .topic-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* 功能按钮组 */
+        .function-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 40px;
+            background: var(--card-bg);
+            margin: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .function-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .function-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .function-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .function-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 模拟考试页面 */
+        .exam-section {
+            margin: 20px;
+            display: none;
+        }
+
+        .exam-modes {
+            display: grid;
+            gap: 20px;
+        }
+
+        .exam-mode-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .exam-mode-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--shadow-hover);
+        }
+
+        .exam-mode-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .exam-mode-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ongoing-exam-badge {
+            background: var(--warning-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* 考试记录页面 */
+        .exam-records {
+            margin: 20px;
+            display: none;
+        }
+
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .record-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .record-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .record-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .record-score {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .record-score.pass {
+            color: var(--success-color);
+        }
+
+        .record-score.fail {
+            color: var(--error-color);
+        }
+
+        .record-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .record-status.ongoing {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .record-status.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        /* 试卷详情页面 */
+        .paper-detail {
+            display: none;
+            margin: 20px;
+        }
+
+        .paper-header {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .paper-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .paper-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .paper-stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .paper-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 班级功能页面 */
+        .class-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .class-join-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            text-align: center;
+        }
+
+        .class-join-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .class-input-group {
+            display: flex;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+
+        .class-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-gradient-start);
+            color: var(--text-primary);
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .class-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .class-join-btn {
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .class-join-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .class-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--bg-gradient-start);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .class-info.active {
+            display: block;
+        }
+
+        .class-info-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .class-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: var(--text-secondary);
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-tertiary);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 25px;
+            box-shadow: 0 -2px 10px var(--nav-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+        }
+
+        /* 底部指示条 */
+        .bottom-indicator {
+            position: fixed;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: var(--text-primary);
+            border-radius: 3px;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 闪卡记忆页面 */
+        .flashcard-section {
+            display: none;
+            margin: 20px;
+            min-height: 500px;
+        }
+
+        .flashcard-container {
+            position: relative;
+            height: 400px;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+
+        .flashcard {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-hover);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: grab;
+            transition: transform 0.3s, opacity 0.3s;
+            touch-action: pan-y;
+        }
+
+        .flashcard.dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .flashcard.swipe-right {
+            transform: translateX(100%) rotate(20deg);
+            opacity: 0;
+        }
+
+        .flashcard.swipe-left {
+            transform: translateX(-100%) rotate(-20deg);
+            opacity: 0;
+        }
+
+        .flashcard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .flashcard-type {
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .flashcard-number {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .flashcard-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flashcard-question {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+        }
+
+        .flashcard-answer {
+            background: var(--bg-gradient-start);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard-answer-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .flashcard-answer-text {
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .flashcard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .flashcard-hint {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .hint-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .flashcard-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 24px;
+        }
+
+        .flashcard-btn-skip {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .flashcard-btn-skip:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 77, 79, 0.4);
+        }
+
+        .flashcard-btn-collect {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .flashcard-btn-collect:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(82, 196, 26, 0.4);
+        }
+
+        /* 章节学习页面 */
+        .chapter-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chapter-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chapter-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .chapter-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chapter-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .chapter-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .chapter-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 错题本页面 */
+        .mistakes-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .mistakes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mistakes-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .mistakes-count {
+            background: var(--error-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .mistakes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mistake-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        /* 收藏夹页面 */
+        .favorites-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .favorites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .favorites-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .favorites-count {
+            background: var(--warning-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .favorites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .favorite-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border-left: 4px solid var(--warning-color);
+            position: relative;
+        }
+
+        .remove-favorite {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg-gradient-start);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: all 0.3s;
+        }
+
+        .remove-favorite:hover {
+            background: var(--error-color);
+            color: white;
+            transform: scale(1.1);
+        }
+        body {
+            padding-bottom: 100px;
+        }
+
+        /* 自定义颜色主题 */
+        body[data-theme="blue"] {
+            --primary-color: #007AFF;
+        }
+
+        body[data-theme="green"] {
+            --primary-color: #34c759;
+        }
+
+        body[data-theme="purple"] {
+            --primary-color: #5856d6;
+        }
+
+        body[data-theme="orange"] {
+            --primary-color: #ff9500;
+        }
+
+        body[data-theme="pink"] {
+            --primary-color: #ff2d55;
+        }
+
+        /* 个人中心页面 */
+        .profile-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            text-align: center;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+        }
+
+        .login-input-group {
+            margin-bottom: 20px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-gradient-start);
+            color: var(--text-primary);
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border-radius: 16px;
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-id {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .profile-menu {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .profile-menu-item {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .profile-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-menu-item:hover {
+            background: var(--bg-gradient-start);
+        }
+
+        .menu-item-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-item-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-gradient-start);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .menu-item-text {
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .menu-item-arrow {
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+
+        /* 打卡页面 */
+        .checkin-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .checkin-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .checkin-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .checkin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+        }
+
+        .checkin-btn.checked {
+            background: var(--success-color);
+            cursor: not-allowed;
+        }
+
+        .checkin-calendar {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-gradient-start);
+            color: var(--text-secondary);
+        }
+
+        .calendar-day.checked {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* 答题统计页面 */
+        .statistics-section {
+            display: none;
+            margin: 20px;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .daily-records {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .record-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .record-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .record-count {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .record-accuracy {
+            font-size: 14px;
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-header">
+        <div class="header-top">
+            <div class="header-left">
+                <div class="app-title">CAAC无人机执照</div>
+            </div>
+            <div class="header-right">
+                <!-- 颜色选择器 -->
+                <div class="color-picker-wrapper">
+                    <div class="color-picker-btn" onclick="toggleColorPicker()"></div>
+                    <div class="color-picker-panel" id="colorPickerPanel">
+                        <div class="color-presets">
+                            <div class="color-preset" style="background: #007AFF;" onclick="changeThemeColor('blue')"></div>
+                            <div class="color-preset" style="background: #34c759;" onclick="changeThemeColor('green')"></div>
+                            <div class="color-preset" style="background: #5856d6;" onclick="changeThemeColor('purple')"></div>
+                            <div class="color-preset" style="background: #ff9500;" onclick="changeThemeColor('orange')"></div>
+                            <div class="color-preset" style="background: #ff2d55;" onclick="changeThemeColor('pink')"></div>
+                        </div>
+                        <div class="theme-mode-toggle">
+                            <span class="toggle-label">深色模式</span>
+                            <div class="theme-switch" id="themeSwitch" onclick="toggleDarkMode()">
+                                <div class="theme-switch-slider">☀️</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 执照类型选择 -->
+        <div class="header-bottom">
+            <span class="license-label">执照类型：</span>
+            <div style="position: relative; flex: 1; max-width: 200px;">
+                <div class="license-selector" onclick="toggleLicenseDropdown()">
+                    <span id="currentLicense">超视距驾驶员</span>
+                    <span>▼</span>
+                </div>
+                <div class="license-dropdown" id="licenseDropdown">
+                    <div class="license-option" onclick="selectLicense('视距内驾驶员')">视距内驾驶员</div>
+                    <div class="license-option" onclick="selectLicense('超视距驾驶员')">超视距驾驶员</div>
+                    <div class="license-option" onclick="selectLicense('教员')">教员</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主页内容 -->
+    <div id="mainContent">
+        <!-- 练习进度卡片 -->
+        <div class="practice-card">
+            <div class="practice-header">
+                <div>
+                    <div class="practice-title">顺序练习</div>
+                </div>
+                <div class="practice-count">0/1127</div>
+            </div>
+            <div class="practice-subtitle">循序渐进劳实基础</div>
+            <div class="progress-circle">
+                <svg width="150" height="150">
+                    <circle cx="75" cy="75" r="65" stroke="var(--border-color)" stroke-width="10" fill="none"/>
+                    <circle cx="75" cy="75" r="65" stroke="var(--primary-color)" stroke-width="10" fill="none" 
+                            stroke-dasharray="408" stroke-dashoffset="408"/>
+                </svg>
+                <div class="progress-text">0%</div>
+            </div>
+        </div>
+
+        <!-- 题库卡片 -->
+        <div class="topic-cards">
+            <div class="topic-card">
+                <div class="topic-icon">📝</div>
+                <div class="topic-title">精简题库</div>
+                <div class="topic-desc">驾考通关更简单</div>
+            </div>
+            <div class="topic-card">
+                <div class="topic-icon">📋</div>
+                <div class="topic-title">模拟考试</div>
+                <div class="topic-desc">模考验真提分快</div>
+            </div>
+        </div>
+
+        <!-- 功能按钮组 -->
+        <div class="function-buttons">
+            <div class="function-btn" onclick="showMistakes()">
+                <div class="function-icon">❌</div>
+                <div class="function-label">错题本</div>
+            </div>
+            <div class="function-btn" onclick="showFavorites()">
+                <div class="function-icon">⭐</div>
+                <div class="function-label">收藏夹</div>
+            </div>
+            <div class="function-btn" onclick="showFlashcards()">
+                <div class="function-icon">🎴</div>
+                <div class="function-label">闪卡记忆</div>
+            </div>
+        </div>
+        
+        <!-- 更多功能按钮组 -->
+        <div class="function-buttons">
+            <div class="function-btn" onclick="alert('章节练习功能开发中...')">
+                <div class="function-icon">✏️</div>
+                <div class="function-label">章节练习</div>
+            </div>
+            <div class="function-btn" onclick="alert('每日一练功能开发中...')">
+                <div class="function-icon">✓</div>
+                <div class="function-label">每日一练</div>
+            </div>
+            <div class="function-btn" onclick="alert('模拟测试功能开发中...')">
+                <div class="function-icon">📝</div>
+                <div class="function-label">模拟测试</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模拟考试页面 -->
+    <div class="exam-section" id="examSection">
+        <div class="exam-modes">
+            <!-- 限时考试模式 -->
+            <div class="exam-mode-card" onclick="openExamSettings('timed')">
+                <div class="exam-mode-header">
+                    <div class="exam-mode-title">
+                        <span>⏰</span>
+                        <span>限时考试模式</span>
+                    </div>
+                    <span class="ongoing-exam-badge" id="timedExamBadge" style="display:none;">进行中</span>
+                </div>
+            </div>
+
+            <!-- 全真模拟模式 -->
+            <div class="exam-mode-card" onclick="startRealExam()">
+                <div class="exam-mode-header">
+                    <div class="exam-mode-title">
+                        <span>🎯</span>
+                        <span>全真模拟模式</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 章节试炼模式 -->
+            <div class="exam-mode-card" onclick="openChapterSelect()">
+                <div class="exam-mode-header">
+                    <div class="exam-mode-title">
+                        <span>📚</span>
+                        <span>章节试炼模式</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 考试记录按钮 -->
+        <div style="margin: 20px;">
+            <button onclick="showExamRecords()" style="width: 100%; padding: 15px; background: var(--card-bg); border: none; border-radius: 12px; color: var(--text-primary); font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px var(--shadow-color);">
+                查看考试记录 →
+            </button>
+        </div>
+    </div>
+
+    <!-- 考试记录页面 -->
+    <div class="exam-records" id="examRecords">
+        <div class="records-header">
+            <h2 style="color: var(--text-primary);">考试记录</h2>
+            <button onclick="backToExam()" style="padding: 8px 16px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回</button>
+        </div>
+        <div id="recordsList"></div>
+    </div>
+
+    <!-- 试卷详情页面 -->
+    <div class="paper-detail" id="paperDetail">
+        <div class="paper-header">
+            <h2 style="color: var(--text-primary); margin-bottom: 15px;">试卷详情</h2>
+            <div class="paper-stats">
+                <div class="paper-stat">
+                    <span class="paper-stat-label">得分</span>
+                    <span class="paper-stat-value" id="paperScore">0分</span>
+                </div>
+                <div class="paper-stat">
+                    <span class="paper-stat-label">正确率</span>
+                    <span class="paper-stat-value" id="paperAccuracy">0%</span>
+                </div>
+                <div class="paper-stat">
+                    <span class="paper-stat-label">错题数</span>
+                    <span class="paper-stat-value" id="paperWrong">0题</span>
+                </div>
+            </div>
+        </div>
+        <div id="paperQuestions"></div>
+        <button onclick="backToRecords()" style="margin: 20px; padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回记录</button>
+    </div>
+
+    <!-- 班级功能页面 -->
+    <div class="class-section" id="classSection">
+        <div class="class-join-card">
+            <div class="class-join-title">加入班级</div>
+            <div class="class-input-group">
+                <input type="text" class="class-input" id="classCode" placeholder="请输入班级号" maxlength="6">
+                <button class="class-join-btn" onclick="joinClass()">加入</button>
+            </div>
+            <div class="class-info" id="classInfo">
+                <div class="class-info-title">当前班级信息</div>
+                <div class="class-details">
+                    <div>班级名称：<span id="className">--</span></div>
+                    <div>执照类型：<span id="classLicense">--</span></div>
+                    <div>班级人数：<span id="classCount">--</span></div>
+                    <div>教员姓名：<span id="classTeacher">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作页面 -->
+    <div class="operation-section" id="operationSection" style="display: none;">
+        <div style="padding: 20px; background: var(--card-bg); border-radius: 12px; margin: 20px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 20px;">实际操作考核</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <div style="padding: 20px; background: var(--bg-gradient-start); border-radius: 8px; text-align: center; cursor: pointer;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">▶️</div>
+                    <div>操作演示视频</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人中心页面 -->
+    <div class="profile-section" id="profileSection">
+        <!-- 个人信息卡片 -->
+        <div id="profileContent">
+            <div class="profile-header" onclick="showLoginModal()" style="cursor: pointer;">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div class="profile-name" id="profileName">未登录</div>
+                <div class="profile-id" id="profileIdDiv" style="display: none;">ID: <span id="profileId">100001</span></div>
+                <div id="loginHint" style="font-size: 14px; opacity: 0.8;">点击登录账号</div>
+            </div>
+
+            <div class="profile-menu">
+                <div class="profile-menu-item" onclick="showLoginModal()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">👤</div>
+                        <div class="menu-item-text">登录账号</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+                
+                <div class="profile-menu-item" onclick="showNews()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">📰</div>
+                        <div class="menu-item-text">资讯</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+                
+                <div class="profile-menu-item" onclick="showChapters()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">📖</div>
+                        <div class="menu-item-text">章节学习</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+                
+                <div class="profile-menu-item" onclick="showCheckin()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">📅</div>
+                        <div class="menu-item-text">每日打卡</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+                
+                <div class="profile-menu-item" onclick="showStatistics()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">📊</div>
+                        <div class="menu-item-text">答题统计</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+                
+                <div class="profile-menu-item" onclick="showLicenseSettings()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">🎯</div>
+                        <div class="menu-item-text">执照类型</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 14px; color: var(--text-secondary);" id="profileLicenseType">超视距驾驶员</span>
+                        <span class="menu-item-arrow">›</span>
+                    </div>
+                </div>
+                
+                <div class="profile-menu-item" id="logoutItem" style="display: none;" onclick="handleLogout()">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon">🚪</div>
+                        <div class="menu-item-text">退出登录</div>
+                    </div>
+                    <div class="menu-item-arrow">›</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>登录账号</span>
+                <span class="modal-close" onclick="closeLoginModal()">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="login-input-group">
+                    <input type="text" class="login-input" id="modalUsername" placeholder="请输入用户名/手机号">
+                </div>
+                <div class="login-input-group">
+                    <input type="password" class="login-input" id="modalPassword" placeholder="请输入密码">
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 15px;">
+                <button class="modal-btn modal-btn-secondary" onclick="closeLoginModal()" style="flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--border-color); color: var(--text-primary); font-size: 16px; cursor: pointer;">取消</button>
+                <button class="modal-btn modal-btn-primary" onclick="handleLogin()" style="flex: 1; padding: 12px; border: none; border-radius: 8px; background: var(--primary-color); color: white; font-size: 16px; cursor: pointer;">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 打卡页面 -->
+    <div class="checkin-section" id="checkinSection">
+        <div class="checkin-card">
+            <h2 style="color: var(--text-primary); margin-bottom: 20px;">今日打卡</h2>
+            <button class="checkin-btn" id="checkinBtn" onclick="doCheckin()">
+                <span style="font-size: 48px;">✓</span>
+                <span>打卡</span>
+            </button>
+            <div id="checkinStatus" style="color: var(--text-secondary); font-size: 14px;">今日未打卡</div>
+        </div>
+
+        <div class="checkin-calendar">
+            <div class="calendar-header">
+                <h3>本月打卡记录</h3>
+                <span id="currentMonth">2024年12月</span>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- 日历将通过JS生成 -->
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToProfile()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回</button>
+        </div>
+    </div>
+
+    <!-- 答题统计页面 -->
+    <div class="statistics-section" id="statisticsSection">
+        <h2 style="margin: 0 0 20px; color: var(--text-primary);">答题统计</h2>
+        
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-value" id="todayCount">0</div>
+                <div class="stat-label">今日答题</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="todayAccuracy">0%</div>
+                <div class="stat-label">今日正确率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">累计答题</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgAccuracy">0%</div>
+                <div class="stat-label">平均正确率</div>
+            </div>
+        </div>
+
+        <div class="daily-records">
+            <h3 style="margin-bottom: 15px; color: var(--text-primary);">每日记录对比</h3>
+            <div id="dailyRecordsList">
+                <!-- 记录将通过JS生成 -->
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToProfile()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回</button>
+        </div>
+    </div>
+
+    <!-- 闪卡记忆页面 -->
+    <div class="flashcard-section" id="flashcardSection">
+        <h2 style="margin: 0 0 20px; color: var(--text-primary); text-align: center;">闪卡记忆</h2>
+        
+        <div class="flashcard-container" id="flashcardContainer">
+            <div class="flashcard" id="currentFlashcard">
+                <div class="flashcard-header">
+                    <span class="flashcard-type">单选题</span>
+                    <span class="flashcard-number">第 <span id="cardNumber">1</span> 题</span>
+                </div>
+                <div class="flashcard-content">
+                    <div class="flashcard-question" id="flashcardQuestion">
+                        无人机在执行任务时，遇到恶劣天气应该如何处理？
+                    </div>
+                    <div class="flashcard-answer">
+                        <div class="flashcard-answer-title">正确答案</div>
+                        <div class="flashcard-answer-text" id="flashcardAnswer">
+                            A. 立即返航并降落在安全地点
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-actions">
+                    <div class="flashcard-hint">
+                        <div class="hint-item">
+                            <span>←</span>
+                            <span>左滑跳过</span>
+                        </div>
+                        <div class="hint-item">
+                            <span>右滑收藏</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flashcard-controls">
+            <button class="flashcard-btn flashcard-btn-skip" onclick="skipCard()">
+                ✕
+            </button>
+            <button class="flashcard-btn flashcard-btn-collect" onclick="collectCard()">
+                ★
+            </button>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button onclick="backToPractice()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回练习</button>
+        </div>
+    </div>
+
+    <!-- 章节学习页面 -->
+    <div class="chapter-section" id="chapterSection">
+        <h2 style="margin: 0 0 20px; color: var(--text-primary);">章节学习</h2>
+        
+        <div class="chapter-list" id="chapterList">
+            <!-- 章节列表将通过JS生成 -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToProfile()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回</button>
+        </div>
+    </div>
+
+    <!-- 错题本页面 -->
+    <div class="mistakes-section" id="mistakesSection">
+        <div class="mistakes-header">
+            <h2 class="mistakes-title">错题本</h2>
+            <span class="mistakes-count" id="mistakesCount">0</span>
+        </div>
+        
+        <div class="mistakes-list" id="mistakesList">
+            <!-- 错题列表将通过JS生成 -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToPractice()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回练习</button>
+        </div>
+    </div>
+
+    <!-- 收藏夹页面 -->
+    <div class="favorites-section" id="favoritesSection">
+        <div class="favorites-header">
+            <h2 class="favorites-title">收藏夹</h2>
+            <span class="favorites-count" id="favoritesCount">0</span>
+        </div>
+        
+        <div class="favorites-list" id="favoritesList">
+            <!-- 收藏列表将通过JS生成 -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToPractice()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回练习</button>
+        </div>
+    </div>
+
+    <!-- 资讯页面 -->
+    <div class="news-section" id="newsSection">
+        <h2 style="margin: 0 0 20px; color: var(--text-primary);">资讯</h2>
+        
+        <div class="news-list" id="newsList">
+            <!-- 资讯列表将通过JS生成 -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="backToProfile()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回</button>
+        </div>
+    </div>
+
+    <!-- 资讯详情页 -->
+    <div class="news-detail" id="newsDetail">
+        <div class="news-detail-header">
+            <div class="news-detail-title" id="newsDetailTitle"></div>
+            <div class="news-detail-meta">
+                <span id="newsDetailDate"></span>
+                <span id="newsDetailCategory"></span>
+                <span id="newsDetailAuthor"></span>
+            </div>
+        </div>
+        <div class="news-detail-content" id="newsDetailContent">
+            <!-- 资讯内容将通过JS生成 -->
+        </div>
+        <div style="margin-top: 20px;">
+            <button onclick="backToNewsList()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">返回资讯列表</button>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="practice">
+            <div class="nav-icon">📚</div>
+            <div class="nav-label">练习</div>
+        </div>
+        <div class="nav-item" data-page="exam">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">模拟考试</div>
+        </div>
+        <div class="nav-item" data-page="operation">
+            <div class="nav-icon">🎮</div>
+            <div class="nav-label">操作</div>
+        </div>
+        <div class="nav-item" data-page="class">
+            <div class="nav-icon">👥</div>
+            <div class="nav-label">班级</div>
+        </div>
+        <div class="nav-item" data-page="profile">
+            <div class="nav-icon">😊</div>
+            <div class="nav-label">我的</div>
+        </div>
+    </div>
+
+    <!-- 底部指示条 -->
+    <div class="bottom-indicator"></div>
+
+    <script>
+        // 全局数据
+        let currentUser = null;
+        let currentLicenseType = '超视距驾驶员';
+        let currentClass = null;
+        let examRecords = JSON.parse(localStorage.getItem('examRecords') || '[]');
+        let ongoingExams = JSON.parse(localStorage.getItem('ongoingExams') || '[]');
+        let checkinData = JSON.parse(localStorage.getItem('checkinData') || '{}');
+        let dailyStats = JSON.parse(localStorage.getItem('dailyStats') || '[]');
+        let mistakeQuestions = JSON.parse(localStorage.getItem('mistakeQuestions') || '[]');
+        let favoriteQuestions = JSON.parse(localStorage.getItem('favoriteQuestions') || '[]');
+        let currentCardIndex = 0;
+
+        // 班级数据模拟
+        const classDatabase = {
+            'ABC123': {
+                name: '2024秋季无人机培训班',
+                licenseType: '视距内驾驶员',
+                count: 35,
+                teacher: '张教员'
+            },
+            'XYZ789': {
+                name: '教员资格培训班',
+                licenseType: '教员',
+                count: 28,
+                teacher: '李教员'
+            }
+        };
+
+        // 资讯数据（模拟后端数据）
+        const newsData = [
+            {
+                id: 1,
+                title: 'CAAC发布最新无人机管理规定',
+                summary: '中国民用航空局近日发布了关于无人机飞行管理的最新规定，对无人机的注册、飞行申请流程进行了优化...',
+                content: '<p>中国民用航空局近日发布了关于无人机飞行管理的最新规定，对无人机的注册、飞行申请流程进行了优化。</p><p>新规定主要包括以下几个方面：</p><p>1. 简化了250克以下微型无人机的注册流程</p><p>2. 优化了飞行申请审批时限，从原来的7个工作日缩短至3个工作日</p><p>3. 新增了临时飞行计划申报功能</p><p>4. 加强了对违规飞行的处罚力度</p>',
+                category: '政策法规',
+                date: '2024-12-15',
+                author: '民航局'
+            },
+            {
+                id: 2,
+                title: '2025年无人机驾驶员考试大纲更新',
+                summary: '根据最新的行业发展需求，2025年无人机驾驶员考试大纲进行了重要更新，新增了城市低空飞行相关内容...',
+                content: '<p>2025年无人机驾驶员考试大纲的主要变化：</p><p>1. 新增城市低空飞行管理章节</p><p>2. 强化了应急处置能力考核</p><p>3. 增加了5G网联无人机相关知识</p><p>4. 实操考试新增夜间飞行科目</p>',
+                category: '考试动态',
+                date: '2024-12-14',
+                author: '考试中心'
+            },
+            {
+                id: 3,
+                title: '无人机行业就业前景分析报告',
+                summary: '最新调研显示，无人机行业人才需求持续增长，预计2025年相关岗位将增加30%以上...',
+                content: '<p>根据行业协会最新发布的就业分析报告：</p><p>1. 无人机飞手平均薪资达到8000-15000元/月</p><p>2. 教员级飞手更是供不应求，月薪可达20000元以上</p><p>3. 主要就业领域包括：航拍、测绘、农业植保、电力巡检等</p>',
+                category: '行业资讯',
+                date: '2024-12-13',
+                author: '行业协会'
+            },
+            {
+                id: 4,
+                title: '低空经济发展规划发布',
+                summary: '国家发改委发布《低空经济发展三年行动计划》，明确了未来三年低空经济发展的重点方向...',
+                content: '<p>行动计划主要内容：</p><p>1. 建设100个低空经济示范区</p><p>2. 培育1000家低空经济相关企业</p><p>3. 创造100万个就业岗位</p><p>4. 到2027年，低空经济产值突破万亿元</p>',
+                category: '政策法规',
+                date: '2024-12-12',
+                author: '发改委'
+            }
+        ];
+
+        // 章节数据
+        const chaptersData = [
+            {
+                id: 1,
+                title: '第一章：无人机基础知识',
+                desc: '了解无人机的基本构造、分类和工作原理',
+                total: 150,
+                completed: 45,
+                questions: []
+            },
+            {
+                id: 2,
+                title: '第二章：航空法规',
+                desc: '学习无人机相关的法律法规和管理规定',
+                total: 200,
+                completed: 120,
+                questions: []
+            },
+            {
+                id: 3,
+                title: '第三章：气象知识',
+                desc: '掌握影响飞行的气象因素和天气判断',
+                total: 100,
+                completed: 30,
+                questions: []
+            },
+            {
+                id: 4,
+                title: '第四章：飞行原理',
+                desc: '深入理解无人机的飞行原理和操控技术',
+                total: 180,
+                completed: 90,
+                questions: []
+            },
+            {
+                id: 5,
+                title: '第五章：紧急处置',
+                desc: '学习各种紧急情况的处理方法和应急程序',
+                total: 120,
+                completed: 60,
+                questions: []
+            }
+        ];
+
+        // 题库配置（根据执照类型变化）
+        const questionBanks = {
+            '视距内驾驶员': { total: 1127, chapters: 12 },
+            '超视距驾驶员': { total: 0, chapters: 0 },  // 清空超视距驾驶员题库
+            '教员': { total: 1127, chapters: 12 }
+        };
+
+        // 实际题库数据（从文件导入的题目）
+        const questionDatabase = {
+            '视距内驾驶员': [
+                {
+                    id: 1,
+                    type: '单选题',
+                    question: '无人机云系统的主要功能不包括？',
+                    options: {
+                        'A': '监视功能',
+                        'B': '通信功能',
+                        'C': '导航功能', 
+                        'D': '自动驾驶功能'
+                    },
+                    answer: 'D',
+                    chapter: 1
+                },
+                {
+                    id: 2,
+                    type: '单选题',
+                    question: '根据CAAC规定，操控无人机应当确保该无人机在其视距范围内飞行，其中视距内飞行是指？',
+                    options: {
+                        'A': '飞行范围500米以内',
+                        'B': '飞行高度120米以下',
+                        'C': '驾驶员或观察员与无人机保持直接目视接触',
+                        'D': '通过摄像头观察'
+                    },
+                    answer: 'C',
+                    chapter: 1
+                },
+                {
+                    id: 3,
+                    type: '单选题',
+                    question: '民用无人机驾驶员合格证的有效期是？',
+                    options: {
+                        'A': '1年',
+                        'B': '2年',
+                        'C': '3年',
+                        'D': '5年'
+                    },
+                    answer: 'B',
+                    chapter: 1
+                },
+                {
+                    id: 4,
+                    type: '判断题',
+                    question: '无人机驾驶员执照过期后不能继续飞行。',
+                    answer: '正确',
+                    chapter: 1
+                },
+                {
+                    id: 5,
+                    type: '单选题',
+                    question: '轻型无人机是指起飞重量不超过？',
+                    options: {
+                        'A': '7千克',
+                        'B': '15千克',
+                        'C': '25千克',
+                        'D': '116千克'
+                    },
+                    answer: 'A',
+                    chapter: 2
+                },
+                {
+                    id: 6,
+                    type: '单选题',
+                    question: '小型无人机是指起飞重量大于7千克，但不超过？',
+                    options: {
+                        'A': '15千克',
+                        'B': '25千克',
+                        'C': '116千克',
+                        'D': '5700千克'
+                    },
+                    answer: 'C',
+                    chapter: 2
+                },
+                {
+                    id: 7,
+                    type: '多选题',
+                    question: '以下哪些区域属于无人机禁飞区？',
+                    options: {
+                        'A': '机场净空保护区',
+                        'B': '军事管理区',
+                        'C': '人口稠密区',
+                        'D': '重要目标周边'
+                    },
+                    answer: 'ABCD',
+                    chapter: 3
+                },
+                {
+                    id: 8,
+                    type: '单选题',
+                    question: '无人机在融合空域飞行需要？',
+                    options: {
+                        'A': '申请飞行计划',
+                        'B': '随意飞行',
+                        'C': '只需要驾驶员执照',
+                        'D': '不需要任何手续'
+                    },
+                    answer: 'A',
+                    chapter: 3
+                },
+                {
+                    id: 9,
+                    type: '判断题',
+                    question: '隔离空域是专门分配给无人机飞行的空域。',
+                    answer: '正确',
+                    chapter: 3
+                },
+                {
+                    id: 10,
+                    type: '单选题',
+                    question: '植保无人机作业时的飞行高度一般为？',
+                    options: {
+                        'A': '1-3米',
+                        'B': '5-10米',
+                        'C': '10-20米',
+                        'D': '20-50米'
+                    },
+                    answer: 'A',
+                    chapter: 4
+                }
+            ],
+            '超视距驾驶员': [],  // 清空题库
+            '教员': [
+                // 教员题库包含与视距内驾驶员相同的基础题目，加上教学相关题目
+                {
+                    id: 1,
+                    type: '单选题',
+                    question: '无人机云系统的主要功能不包括？',
+                    options: {
+                        'A': '监视功能',
+                        'B': '通信功能',
+                        'C': '导航功能', 
+                        'D': '自动驾驶功能'
+                    },
+                    answer: 'D',
+                    chapter: 1
+                },
+                {
+                    id: 2,
+                    type: '单选题',
+                    question: '根据CAAC规定，操控无人机应当确保该无人机在其视距范围内飞行，其中视距内飞行是指？',
+                    options: {
+                        'A': '飞行范围500米以内',
+                        'B': '飞行高度120米以下',
+                        'C': '驾驶员或观察员与无人机保持直接目视接触',
+                        'D': '通过摄像头观察'
+                    },
+                    answer: 'C',
+                    chapter: 1
+                },
+                {
+                    id: 3,
+                    type: '单选题',
+                    question: '民用无人机驾驶员合格证的有效期是？',
+                    options: {
+                        'A': '1年',
+                        'B': '2年',
+                        'C': '3年',
+                        'D': '5年'
+                    },
+                    answer: 'B',
+                    chapter: 1
+                },
+                {
+                    id: 101,
+                    type: '单选题',
+                    question: '无人机教员应具备的最少飞行经历时间为？',
+                    options: {
+                        'A': '50小时',
+                        'B': '100小时',
+                        'C': '150小时',
+                        'D': '200小时'
+                    },
+                    answer: 'B',
+                    chapter: 11
+                },
+                {
+                    id: 102,
+                    type: '多选题',
+                    question: '无人机教员的职责包括？',
+                    options: {
+                        'A': '理论教学',
+                        'B': '实践飞行指导',
+                        'C': '安全监督',
+                        'D': '考核评估'
+                    },
+                    answer: 'ABCD',
+                    chapter: 11
+                },
+                {
+                    id: 103,
+                    type: '判断题',
+                    question: '无人机教员可以同时指导多名学员进行实践飞行。',
+                    answer: '错误',
+                    chapter: 11
+                }
+            ]
+        };
+
+        // 模拟题库数据（用于闪卡记忆）
+        const flashcardQuestions = [
+            {
+                id: 1,
+                type: '单选题',
+                question: '无人机云系统的主要功能不包括？',
+                answer: 'D. 自动驾驶功能'
+            },
+            {
+                id: 2,
+                type: '单选题',
+                question: '视距内飞行是指？',
+                answer: 'C. 驾驶员或观察员与无人机保持直接目视接触'
+            },
+            {
+                id: 3,
+                type: '判断题',
+                question: '民用无人机驾驶员合格证的有效期是2年',
+                answer: '正确'
+            },
+            {
+                id: 4,
+                type: '单选题',
+                question: '轻型无人机是指起飞重量不超过？',
+                answer: 'A. 7千克'
+            },
+            {
+                id: 5,
+                type: '多选题',
+                question: '哪些区域属于无人机禁飞区？',
+                answer: 'A.机场净空保护区 B.军事管理区 C.人口稠密区 D.重要目标周边'
+            }
+        ];
+
+        // 执照类型选择
+        function toggleLicenseDropdown() {
+            const dropdown = document.getElementById('licenseDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectLicense(type) {
+            currentLicenseType = type;
+            document.getElementById('currentLicense').textContent = type;
+            document.getElementById('profileLicenseType').textContent = type;
+            document.getElementById('licenseDropdown').classList.remove('active');
+            
+            // 更新题库数量
+            updateQuestionBank(type);
+            
+            // 保存到用户信息
+            if (currentUser) {
+                currentUser.licenseType = type;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            // 保存选择
+            localStorage.setItem('licenseType', type);
+        }
+
+        function updateQuestionBank(type) {
+            const bank = questionBanks[type];
+            if (!bank) {
+                console.warn(`未找到 ${type} 的题库配置`);
+                return;
+            }
+            
+            const practiceCount = document.querySelector('.practice-count');
+            if (practiceCount) {
+                practiceCount.textContent = `0/${bank.total}`;
+            }
+            
+            // 这里可以添加更多更新逻辑，如更新操作视频等
+            console.log(`切换到${type}，题库总数：${bank.total}`);
+        }
+
+        // 颜色主题选择
+        function toggleColorPicker() {
+            const panel = document.getElementById('colorPickerPanel');
+            panel.classList.toggle('active');
+        }
+
+        function changeThemeColor(color) {
+            document.body.setAttribute('data-theme', color);
+            localStorage.setItem('themeColor', color);
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const themeSwitch = document.getElementById('themeSwitch');
+            const slider = themeSwitch.querySelector('.theme-switch-slider');
+            
+            body.classList.toggle('dark-mode');
+            themeSwitch.classList.toggle('active');
+            
+            if (body.classList.contains('dark-mode')) {
+                slider.textContent = '🌙';
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                slider.textContent = '☀️';
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+
+        // 班级功能
+        function joinClass() {
+            const classCode = document.getElementById('classCode').value.toUpperCase();
+            
+            if (!classCode) {
+                alert('请输入班级号');
+                return;
+            }
+            
+            const classData = classDatabase[classCode];
+            
+            if (classData) {
+                currentClass = classData;
+                
+                // 显示班级信息
+                document.getElementById('className').textContent = classData.name;
+                document.getElementById('classLicense').textContent = classData.licenseType;
+                document.getElementById('classCount').textContent = classData.count + '人';
+                document.getElementById('classTeacher').textContent = classData.teacher;
+                document.getElementById('classInfo').classList.add('active');
+                
+                // 自动切换到班级指定的执照类型
+                selectLicense(classData.licenseType);
+                
+                // 保存班级信息
+                localStorage.setItem('currentClass', JSON.stringify(classData));
+                
+                alert(`成功加入${classData.name}！\n已自动切换到${classData.licenseType}题库`);
+                
+                // 切换到练习页面
+                switchPage('practice');
+            } else {
+                alert('班级号不存在，请检查后重试');
+            }
+        }
+
+        // 考试记录功能
+        function showExamRecords() {
+            const examSection = document.getElementById('examSection');
+            const recordsSection = document.getElementById('examRecords');
+            
+            examSection.style.display = 'none';
+            recordsSection.style.display = 'block';
+            
+            renderExamRecords();
+        }
+
+        function renderExamRecords() {
+            const recordsList = document.getElementById('recordsList');
+            
+            // 合并进行中的考试和已完成的考试
+            const allRecords = [
+                ...ongoingExams.map(e => ({...e, status: 'ongoing'})),
+                ...examRecords.map(e => ({...e, status: 'completed'}))
+            ];
+            
+            if (allRecords.length === 0) {
+                recordsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-tertiary);">暂无考试记录</div>';
+                return;
+            }
+            
+            recordsList.innerHTML = allRecords.map(record => `
+                <div class="record-card" onclick="viewExamDetail('${record.id}', '${record.status}')">
+                    <div class="record-header">
+                        <div>
+                            <span class="record-title">${getExamTypeName(record.type)}</span>
+                            <span class="record-status ${record.status}">${record.status === 'ongoing' ? '进行中' : '已完成'}</span>
+                        </div>
+                        ${record.status === 'completed' ? `
+                            <div class="record-score ${record.passed ? 'pass' : 'fail'}">
+                                ${record.score}分
+                            </div>
+                        ` : `
+                            <button onclick="event.stopPropagation(); continueExam('${record.id}')" style="padding: 6px 12px; background: var(--warning-color); color: white; border: none; border-radius: 6px; cursor: pointer;">继续答题</button>
+                        `}
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 14px; margin-top: 10px;">
+                        <span>📅 ${record.date}</span>
+                        ${record.status === 'completed' ? `
+                            <span style="margin-left: 15px;">✅ ${record.correctCount}/${record.totalCount}</span>
+                        ` : `
+                            <span style="margin-left: 15px;">⏱️ 剩余时间：${getTimeRemaining(record.endTime)}</span>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getExamTypeName(type) {
+            const typeNames = {
+                'timed': '限时考试',
+                'real': '全真模拟',
+                'chapter': '章节试炼'
+            };
+            return typeNames[type] || '未知类型';
+        }
+
+        function getTimeRemaining(endTime) {
+            const now = Date.now();
+            const remaining = endTime - now;
+            
+            if (remaining <= 0) return '已过期';
+            
+            const minutes = Math.floor(remaining / 1000 / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}小时${minutes % 60}分钟`;
+            }
+            return `${minutes}分钟`;
+        }
+
+        function viewExamDetail(examId, status) {
+            if (status === 'ongoing') {
+                continueExam(examId);
+            } else {
+                showPaperDetail(examId);
+            }
+        }
+
+        function continueExam(examId) {
+            const exam = ongoingExams.find(e => e.id === examId);
+            if (exam) {
+                if (Date.now() > exam.endTime) {
+                    alert('考试时间已过期');
+                    // 移除过期的考试
+                    ongoingExams = ongoingExams.filter(e => e.id !== examId);
+                    localStorage.setItem('ongoingExams', JSON.stringify(ongoingExams));
+                    renderExamRecords();
+                } else {
+                    alert('继续考试功能开发中...');
+                    // 这里应该跳转到考试答题页面
+                }
+            }
+        }
+
+        function showPaperDetail(examId) {
+            const record = examRecords.find(r => r.id === examId);
+            if (!record) return;
+            
+            document.getElementById('examRecords').style.display = 'none';
+            document.getElementById('paperDetail').style.display = 'block';
+            
+            document.getElementById('paperScore').textContent = record.score + '分';
+            document.getElementById('paperAccuracy').textContent = Math.round((record.correctCount / record.totalCount) * 100) + '%';
+            document.getElementById('paperWrong').textContent = (record.totalCount - record.correctCount) + '题';
+            
+            // 这里可以显示具体的题目和答案
+            document.getElementById('paperQuestions').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">详细试题内容开发中...</div>';
+        }
+
+        function backToExam() {
+            document.getElementById('examRecords').style.display = 'none';
+            document.getElementById('examSection').style.display = 'block';
+        }
+
+        function backToRecords() {
+            document.getElementById('paperDetail').style.display = 'none';
+            document.getElementById('examRecords').style.display = 'block';
+        }
+
+        // 页面切换
+        function switchPage(page) {
+            // 隐藏所有页面
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('examSection').style.display = 'none';
+            document.getElementById('examRecords').style.display = 'none';
+            document.getElementById('paperDetail').style.display = 'none';
+            document.getElementById('classSection').style.display = 'none';
+            document.getElementById('operationSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('checkinSection').style.display = 'none';
+            document.getElementById('statisticsSection').style.display = 'none';
+            document.getElementById('flashcardSection').style.display = 'none';
+            document.getElementById('chapterSection').style.display = 'none';
+            document.getElementById('mistakesSection').style.display = 'none';
+            document.getElementById('favoritesSection').style.display = 'none';
+            document.getElementById('newsSection').style.display = 'none';
+            document.getElementById('newsDetail').style.display = 'none';
+            
+            // 更新导航栏状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 显示对应页面
+            switch(page) {
+                case 'practice':
+                    document.getElementById('mainContent').style.display = 'block';
+                    break;
+                case 'exam':
+                    document.getElementById('examSection').style.display = 'block';
+                    checkOngoingExams();
+                    break;
+                case 'operation':
+                    document.getElementById('operationSection').style.display = 'block';
+                    break;
+                case 'class':
+                    document.getElementById('classSection').style.display = 'block';
+                    break;
+                case 'profile':
+                    document.getElementById('profileSection').style.display = 'block';
+                    checkLoginStatus();
+                    break;
+            }
+        }
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                // 已登录状态
+                document.getElementById('profileAvatar').textContent = '😊';
+                document.getElementById('profileName').textContent = currentUser.name;
+                document.getElementById('profileIdDiv').style.display = 'block';
+                document.getElementById('profileId').textContent = currentUser.id || '100001';
+                document.getElementById('loginHint').style.display = 'none';
+                document.getElementById('logoutItem').style.display = 'block';
+                
+                // 恢复执照类型
+                if (currentUser.licenseType) {
+                    selectLicense(currentUser.licenseType);
+                }
+            } else {
+                // 未登录状态
+                document.getElementById('profileAvatar').textContent = '👤';
+                document.getElementById('profileName').textContent = '未登录';
+                document.getElementById('profileIdDiv').style.display = 'none';
+                document.getElementById('loginHint').style.display = 'block';
+                document.getElementById('loginHint').textContent = '点击登录账号';
+                document.getElementById('logoutItem').style.display = 'none';
+            }
+        }
+
+        // 显示登录模态框
+        function showLoginModal() {
+            // 如果已登录，点击头像不弹出登录框
+            if (currentUser && event.currentTarget.className === 'profile-header') {
+                return;
+            }
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        // 关闭登录模态框
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('modalUsername').value = '';
+            document.getElementById('modalPassword').value = '';
+        }
+
+        // 登录功能
+        function handleLogin() {
+            const username = document.getElementById('modalUsername').value;
+            const password = document.getElementById('modalPassword').value;
+            
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            // 模拟登录成功
+            currentUser = {
+                id: Date.now(),
+                name: username,
+                licenseType: currentLicenseType
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            checkLoginStatus();
+            closeLoginModal();
+            
+            alert('登录成功！');
+        }
+
+        // 退出登录
+        function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                checkLoginStatus();
+            }
+        }
+
+        // 打卡功能
+        function showCheckin() {
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('checkinSection').style.display = 'block';
+            
+            initCalendar();
+            checkTodayCheckin();
+        }
+
+        function doCheckin() {
+            if (!currentUser) {
+                if (confirm('您还未登录，是否立即登录？')) {
+                    showLoginModal();
+                }
+                return;
+            }
+            
+            const today = new Date().toDateString();
+            const userCheckinKey = `checkin_${currentUser.id}_${today}`;
+            
+            if (localStorage.getItem(userCheckinKey)) {
+                alert('今天已经打过卡了！');
+                return;
+            }
+            
+            localStorage.setItem(userCheckinKey, 'true');
+            checkinData[today] = true;
+            localStorage.setItem('checkinData', JSON.stringify(checkinData));
+            
+            document.getElementById('checkinBtn').classList.add('checked');
+            document.getElementById('checkinStatus').textContent = '今日已打卡';
+            
+            initCalendar();
+            alert('打卡成功！');
+        }
+
+        function checkTodayCheckin() {
+            const today = new Date().toDateString();
+            
+            if (currentUser) {
+                const userCheckinKey = `checkin_${currentUser.id}_${today}`;
+                if (localStorage.getItem(userCheckinKey)) {
+                    document.getElementById('checkinBtn').classList.add('checked');
+                    document.getElementById('checkinStatus').textContent = '今日已打卡';
+                } else {
+                    document.getElementById('checkinBtn').classList.remove('checked');
+                    document.getElementById('checkinStatus').textContent = '今日未打卡';
+                }
+            } else {
+                // 未登录时使用通用打卡数据
+                if (checkinData[today]) {
+                    document.getElementById('checkinBtn').classList.add('checked');
+                    document.getElementById('checkinStatus').textContent = '今日已打卡';
+                } else {
+                    document.getElementById('checkinBtn').classList.remove('checked');
+                    document.getElementById('checkinStatus').textContent = '今日未打卡';
+                }
+            }
+        }
+
+        function initCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            document.getElementById('currentMonth').textContent = `${year}年${month + 1}月`;
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            // 添加星期标题
+            const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekDays.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.style.fontWeight = 'bold';
+                dayElement.style.color = 'var(--text-primary)';
+                grid.appendChild(dayElement);
+            });
+            
+            // 添加空白天数
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                grid.appendChild(emptyDay);
+            }
+            
+            // 添加日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                const date = new Date(year, month, day);
+                const dateString = date.toDateString();
+                
+                if (checkinData[dateString]) {
+                    dayElement.classList.add('checked');
+                }
+                
+                if (date.toDateString() === new Date().toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                grid.appendChild(dayElement);
+            }
+        }
+
+        // 答题统计功能
+        function showStatistics() {
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('statisticsSection').style.display = 'block';
+            
+            loadStatistics();
+        }
+
+        function loadStatistics() {
+            // 模拟今日数据
+            const today = new Date().toLocaleDateString();
+            const todayData = dailyStats.find(d => d.date === today) || {
+                count: Math.floor(Math.random() * 50) + 10,
+                correct: Math.floor(Math.random() * 40) + 5
+            };
+            
+            document.getElementById('todayCount').textContent = todayData.count || 0;
+            document.getElementById('todayAccuracy').textContent = 
+                todayData.count ? Math.round((todayData.correct / todayData.count) * 100) + '%' : '0%';
+            
+            // 计算总体数据
+            let totalCount = 0;
+            let totalCorrect = 0;
+            
+            dailyStats.forEach(stat => {
+                totalCount += stat.count;
+                totalCorrect += stat.correct;
+            });
+            
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('avgAccuracy').textContent = 
+                totalCount ? Math.round((totalCorrect / totalCount) * 100) + '%' : '0%';
+            
+            // 生成每日记录
+            const recordsList = document.getElementById('dailyRecordsList');
+            
+            // 模拟最近7天的数据
+            const recentDays = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toLocaleDateString();
+                
+                let dayData = dailyStats.find(d => d.date === dateStr);
+                if (!dayData && i > 0) {
+                    dayData = {
+                        date: dateStr,
+                        count: Math.floor(Math.random() * 100) + 20,
+                        correct: Math.floor(Math.random() * 80) + 15
+                    };
+                    dailyStats.push(dayData);
+                }
+                
+                if (dayData) {
+                    recentDays.push(dayData);
+                }
+            }
+            
+            localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
+            
+            recordsList.innerHTML = recentDays.map(record => `
+                <div class="record-item">
+                    <div class="record-date">${record.date}</div>
+                    <div class="record-stats">
+                        <div class="record-count">答题 ${record.count} 题</div>
+                        <div class="record-accuracy">正确率 ${Math.round((record.correct / record.count) * 100)}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 显示执照设置
+        function showLicenseSettings() {
+            alert('请在顶部选择执照类型进行切换');
+        }
+
+        // 返回个人中心
+        function backToProfile() {
+            document.getElementById('checkinSection').style.display = 'none';
+            document.getElementById('statisticsSection').style.display = 'none';
+            document.getElementById('chapterSection').style.display = 'none';
+            document.getElementById('newsSection').style.display = 'none';
+            document.getElementById('newsDetail').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'block';
+        }
+
+        // 资讯功能
+        function showNews() {
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('newsSection').style.display = 'block';
+            loadNewsList();
+        }
+
+        function loadNewsList() {
+            const newsList = document.getElementById('newsList');
+            
+            // 模拟从后端获取资讯数据
+            newsList.innerHTML = newsData.map(news => `
+                <div class="news-item" onclick="showNewsDetail(${news.id})">
+                    <div class="news-header">
+                        <div class="news-title">${news.title}</div>
+                        <div class="news-date">${news.date}</div>
+                    </div>
+                    <div class="news-summary">${news.summary}</div>
+                    <div class="news-footer">
+                        <span class="news-category">${news.category}</span>
+                        <span class="news-read-more">阅读更多 →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showNewsDetail(newsId) {
+            const news = newsData.find(n => n.id === newsId);
+            if (!news) return;
+            
+            document.getElementById('newsSection').style.display = 'none';
+            document.getElementById('newsDetail').style.display = 'block';
+            
+            document.getElementById('newsDetailTitle').textContent = news.title;
+            document.getElementById('newsDetailDate').textContent = news.date;
+            document.getElementById('newsDetailCategory').textContent = news.category;
+            document.getElementById('newsDetailAuthor').textContent = '作者：' + news.author;
+            document.getElementById('newsDetailContent').innerHTML = news.content;
+        }
+
+        function backToNewsList() {
+            document.getElementById('newsDetail').style.display = 'none';
+            document.getElementById('newsSection').style.display = 'block';
+        }
+        
+        // 返回练习页面
+        function backToPractice() {
+            document.getElementById('flashcardSection').style.display = 'none';
+            document.getElementById('mistakesSection').style.display = 'none';
+            document.getElementById('favoritesSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        // 闪卡记忆功能
+        function showFlashcards() {
+            // 隐藏所有页面
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('flashcardSection').style.display = 'block';
+            
+            currentCardIndex = 0;
+            loadFlashcard();
+            initFlashcardSwipe();
+        }
+
+        function loadFlashcard() {
+            if (currentCardIndex >= flashcardQuestions.length) {
+                currentCardIndex = 0; // 循环显示
+            }
+            
+            const question = flashcardQuestions[currentCardIndex];
+            document.getElementById('cardNumber').textContent = currentCardIndex + 1;
+            document.getElementById('flashcardQuestion').textContent = question.question;
+            document.getElementById('flashcardAnswer').textContent = question.answer;
+            
+            // 重置卡片位置
+            const card = document.getElementById('currentFlashcard');
+            card.classList.remove('swipe-left', 'swipe-right');
+            card.style.transform = '';
+        }
+
+        function skipCard() {
+            const card = document.getElementById('currentFlashcard');
+            card.classList.add('swipe-left');
+            
+            setTimeout(() => {
+                currentCardIndex++;
+                loadFlashcard();
+            }, 300);
+        }
+
+        function collectCard() {
+            const question = flashcardQuestions[currentCardIndex];
+            
+            // 检查是否已收藏
+            const exists = favoriteQuestions.find(q => q.id === question.id);
+            if (!exists) {
+                favoriteQuestions.push(question);
+                localStorage.setItem('favoriteQuestions', JSON.stringify(favoriteQuestions));
+                alert('已添加到收藏夹！');
+            } else {
+                alert('该题目已在收藏夹中！');
+            }
+            
+            const card = document.getElementById('currentFlashcard');
+            card.classList.add('swipe-right');
+            
+            setTimeout(() => {
+                currentCardIndex++;
+                loadFlashcard();
+            }, 300);
+        }
+
+        function initFlashcardSwipe() {
+            const card = document.getElementById('currentFlashcard');
+            let startX = null;
+            let currentX = null;
+            let cardElem = null;
+
+            // 触摸事件
+            card.addEventListener('touchstart', handleStart, {passive: true});
+            card.addEventListener('touchmove', handleMove, {passive: true});
+            card.addEventListener('touchend', handleEnd);
+            
+            // 鼠标事件
+            card.addEventListener('mousedown', handleStart);
+            card.addEventListener('mousemove', handleMove);
+            card.addEventListener('mouseup', handleEnd);
+            card.addEventListener('mouseleave', handleEnd);
+
+            function handleStart(e) {
+                cardElem = e.currentTarget;
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                cardElem.classList.add('dragging');
+            }
+
+            function handleMove(e) {
+                if (!startX) return;
+                
+                currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                const diffX = currentX - startX;
+                const rotation = diffX * 0.1;
+                
+                cardElem.style.transform = `translateX(${diffX}px) rotate(${rotation}deg)`;
+            }
+
+            function handleEnd(e) {
+                if (!startX) return;
+                
+                const diffX = currentX - startX;
+                const threshold = 100;
+                
+                if (Math.abs(diffX) > threshold) {
+                    if (diffX > 0) {
+                        collectCard();
+                    } else {
+                        skipCard();
+                    }
+                } else {
+                    cardElem.style.transform = '';
+                }
+                
+                cardElem.classList.remove('dragging');
+                startX = null;
+                currentX = null;
+            }
+        }
+
+        // 章节学习功能
+        function showChapters() {
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('chapterSection').style.display = 'block';
+            
+            loadChapters();
+        }
+
+        function loadChapters() {
+            const chapterList = document.getElementById('chapterList');
+            
+            chapterList.innerHTML = chaptersData.map(chapter => {
+                const progress = Math.round((chapter.completed / chapter.total) * 100);
+                return `
+                    <div class="chapter-card" onclick="startChapter(${chapter.id})">
+                        <div class="chapter-header">
+                            <div class="chapter-title">${chapter.title}</div>
+                            <div class="chapter-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <span class="chapter-count">${chapter.completed}/${chapter.total}</span>
+                            </div>
+                        </div>
+                        <div class="chapter-desc">${chapter.desc}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startChapter(chapterId) {
+            const chapter = chaptersData.find(c => c.id === chapterId);
+            alert(`开始学习：${chapter.title}`);
+            // 这里可以跳转到具体的章节学习页面
+        }
+
+        // 错题本功能
+        function showMistakes() {
+            // 隐藏所有页面
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('mistakesSection').style.display = 'block';
+            
+            loadMistakes();
+        }
+
+        function loadMistakes() {
+            const mistakesList = document.getElementById('mistakesList');
+            const mistakesCount = document.getElementById('mistakesCount');
+            
+            // 模拟一些错题数据
+            if (mistakeQuestions.length === 0) {
+                mistakeQuestions = [
+                    {
+                        id: 101,
+                        question: '无人机在人口密集区域飞行的最大高度是？',
+                        userAnswer: 'A. 50米',
+                        correctAnswer: 'B. 30米',
+                        date: '2024-12-15'
+                    },
+                    {
+                        id: 102,
+                        question: '夜间飞行无人机需要配备什么设备？',
+                        userAnswer: 'B. 红外相机',
+                        correctAnswer: 'C. 防撞灯',
+                        date: '2024-12-14'
+                    }
+                ];
+                localStorage.setItem('mistakeQuestions', JSON.stringify(mistakeQuestions));
+            }
+            
+            mistakesCount.textContent = mistakeQuestions.length;
+            
+            if (mistakeQuestions.length === 0) {
+                mistakesList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-tertiary);">暂无错题记录</div>';
+            } else {
+                mistakesList.innerHTML = mistakeQuestions.map(item => `
+                    <div class="mistake-item">
+                        <div style="font-size: 16px; color: var(--text-primary); margin-bottom: 10px;">
+                            ${item.question}
+                        </div>
+                        <div style="font-size: 14px; color: var(--error-color); margin-bottom: 5px;">
+                            你的答案：${item.userAnswer}
+                        </div>
+                        <div style="font-size: 14px; color: var(--success-color); margin-bottom: 10px;">
+                            正确答案：${item.correctAnswer}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-tertiary);">
+                            错题日期：${item.date}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 收藏夹功能
+        function showFavorites() {
+            // 隐藏所有页面
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('favoritesSection').style.display = 'block';
+            
+            loadFavorites();
+        }
+
+        function loadFavorites() {
+            const favoritesList = document.getElementById('favoritesList');
+            const favoritesCount = document.getElementById('favoritesCount');
+            
+            favoritesCount.textContent = favoriteQuestions.length;
+            
+            if (favoriteQuestions.length === 0) {
+                favoritesList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-tertiary);">暂无收藏题目</div>';
+            } else {
+                favoritesList.innerHTML = favoriteQuestions.map((item, index) => `
+                    <div class="favorite-item">
+                        <button class="remove-favorite" onclick="removeFavorite(${index})">×</button>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">
+                            ${item.type}
+                        </div>
+                        <div style="font-size: 16px; color: var(--text-primary); margin-bottom: 15px;">
+                            ${item.question}
+                        </div>
+                        <div style="font-size: 14px; color: var(--primary-color);">
+                            答案：${item.answer}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function removeFavorite(index) {
+            if (confirm('确定要移除这道收藏题吗？')) {
+                favoriteQuestions.splice(index, 1);
+                localStorage.setItem('favoriteQuestions', JSON.stringify(favoriteQuestions));
+                loadFavorites();
+            }
+        }
+
+        // 底部导航事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                switchPage(this.dataset.page);
+            });
+        });
+
+        // 检查进行中的考试
+        function checkOngoingExams() {
+            const hasOngoing = ongoingExams.some(e => Date.now() < e.endTime);
+            document.getElementById('timedExamBadge').style.display = hasOngoing ? 'inline-block' : 'none';
+        }
+
+        // 模拟考试功能
+        function openExamSettings(type) {
+            alert('考试设置功能开发中...');
+        }
+
+        function startRealExam() {
+            alert('全真模拟考试开发中...');
+        }
+
+        function openChapterSelect() {
+            alert('章节试炼功能开发中...');
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态
+            checkLoginStatus();
+            
+            // 恢复保存的设置
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'true') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeSwitch').classList.add('active');
+                document.querySelector('.theme-switch-slider').textContent = '🌙';
+            }
+            
+            const savedColor = localStorage.getItem('themeColor');
+            if (savedColor) {
+                document.body.setAttribute('data-theme', savedColor);
+            }
+            
+            const savedLicense = localStorage.getItem('licenseType');
+            if (savedLicense && questionBanks[savedLicense]) {
+                selectLicense(savedLicense);
+            } else {
+                // 设置默认执照类型
+                selectLicense('超视距驾驶员');
+            }
+            
+            const savedClass = localStorage.getItem('currentClass');
+            if (savedClass) {
+                currentClass = JSON.parse(savedClass);
+                document.getElementById('className').textContent = currentClass.name;
+                document.getElementById('classLicense').textContent = currentClass.licenseType;
+                document.getElementById('classCount').textContent = currentClass.count + '人';
+                document.getElementById('classTeacher').textContent = currentClass.teacher;
+                document.getElementById('classInfo').classList.add('active');
+            }
+            
+            // 点击外部关闭下拉菜单和模态框
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.license-selector')) {
+                    document.getElementById('licenseDropdown').classList.remove('active');
+                }
+                if (!e.target.closest('.color-picker-wrapper')) {
+                    document.getElementById('colorPickerPanel').classList.remove('active');
+                }
+                // 点击模态框背景关闭
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('active');
+                }
+            });
+        });
+
+        // 模拟一些考试记录数据
+        if (examRecords.length === 0) {
+            examRecords = [
+                {
+                    id: 'exam_001',
+                    type: 'timed',
+                    date: '2024-12-15 14:30',
+                    score: 85,
+                    passed: true,
+                    correctCount: 17,
+                    totalCount: 20
+                },
+                {
+                    id: 'exam_002',
+                    type: 'real',
+                    date: '2024-12-14 10:00',
+                    score: 68,
+                    passed: false,
+                    correctCount: 68,
+                    totalCount: 100
+                }
+            ];
+            
+            ongoingExams = [
+                {
+                    id: 'exam_003',
+                    type: 'timed',
+                    date: '2024-12-15 16:00',
+                    endTime: Date.now() + 30 * 60 * 1000, // 30分钟后过期
+                    currentQuestion: 5,
+                    totalCount: 20
+                }
+            ];
+            
+            localStorage.setItem('examRecords', JSON.stringify(examRecords));
+            localStorage.setItem('ongoingExams', JSON.stringify(ongoingExams));
+        }
+    </script>
+</body>
+</html>
